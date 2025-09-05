@@ -17,7 +17,6 @@ function makeTransport() {
 export const logger = pino({
   level: process.env.LOG_LEVEL ?? (isProd ? 'info' : 'debug'),
   transport: makeTransport(),
-  // скрываем секреты из логов http (pino-http кладёт их в req/res)
   redact: {
     paths: [
       'req.headers.authorization',

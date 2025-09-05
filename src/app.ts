@@ -6,7 +6,6 @@ import pinoHttp from 'pino-http';
 import cookieParser from 'cookie-parser';
 
 import { logger } from './config/logger';
-import { apiRateLimiter } from './middlewares/rateLimiter';
 import healthRouter from './routes/health';
 import { errorHandler, notFound } from './middlewares/error';
 
@@ -51,7 +50,6 @@ export function createApp() {
   );
 
   app.use(pinoHttp({ logger }));
-  app.use(apiRateLimiter);
   app.use(express.json({ limit: '1mb' }));
   app.use(cookieParser());
   app.use(compression()); // gzip/deflate/br для списков/контента

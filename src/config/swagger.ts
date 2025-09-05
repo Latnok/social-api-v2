@@ -1,4 +1,3 @@
-// src/config/swagger.ts
 import swaggerJSDoc from 'swagger-jsdoc';
 
 const servers =
