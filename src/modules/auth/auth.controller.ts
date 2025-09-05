@@ -19,7 +19,7 @@ const sameSite = (process.env.REFRESH_COOKIE_SAMESITE as any) ?? 'lax';
 function setRefreshCookie(res: Response, token: string) {
   res.cookie(REFRESH_COOKIE_NAME, token, {
     httpOnly: true,
-    sameSite: sameSite,        // 'lax'|'strict'|'none'
+    sameSite: sameSite, // 'lax'|'strict'|'none'
     secure: isProd || sameSite === 'none', // для SameSite=None обязателен secure
     domain: REFRESH_COOKIE_DOMAIN,
     maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -29,7 +29,9 @@ function setRefreshCookie(res: Response, token: string) {
 
 export const register = async (req: Request, res: Response) => {
   const { email, password, displayName } = req.body as {
-    email?: string; password?: string; displayName?: string;
+    email?: string;
+    password?: string;
+    displayName?: string;
   };
 
   if (!email || !password || !displayName) {

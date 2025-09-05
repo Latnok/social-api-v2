@@ -26,7 +26,12 @@ export function optionalAuth(req: Request, _res: Response, next: NextFunction) {
   const token = header.slice('Bearer '.length);
   try {
     const payload = verifyAccess(token);
-    req.user = { id: payload.sub, role: payload.role, email: payload.email, displayName: payload.displayName };
+    req.user = {
+      id: payload.sub,
+      role: payload.role,
+      email: payload.email,
+      displayName: payload.displayName,
+    };
   } catch {
     // игнорируем — просто нет пользователя
   }
@@ -41,7 +46,12 @@ export function requireAuth(req: Request, _res: Response, next: NextFunction) {
   const token = header.slice('Bearer '.length);
   try {
     const payload = verifyAccess(token);
-    req.user = { id: payload.sub, role: payload.role, email: payload.email, displayName: payload.displayName };
+    req.user = {
+      id: payload.sub,
+      role: payload.role,
+      email: payload.email,
+      displayName: payload.displayName,
+    };
     next();
   } catch {
     throw new HttpError(401, 'Unauthorized');

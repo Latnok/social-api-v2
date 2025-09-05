@@ -6,11 +6,11 @@ export const postsRepo = () => AppDataSource.getRepository(Post);
 
 export type PostsListParams = {
   limit?: number;
-  cursor?: string | null;         // base64("createdAt|id")
-  q?: string | null;              // поиск по title
-  authorId?: string | null;       // фильтр по автору
-  includeAuthor?: boolean;        // вернуть краткие данные автора
-  withDeleted?: boolean;          // видеть удалённые (только для админских задач)
+  cursor?: string | null; // base64("createdAt|id")
+  q?: string | null; // поиск по title
+  authorId?: string | null; // фильтр по автору
+  includeAuthor?: boolean; // вернуть краткие данные автора
+  withDeleted?: boolean; // видеть удалённые (только для админских задач)
 };
 
 function decodeCursor(cursor: string): { createdAt: string; id: string } | null {
@@ -18,7 +18,9 @@ function decodeCursor(cursor: string): { createdAt: string; id: string } | null 
     const [createdAt, id] = Buffer.from(cursor, 'base64').toString('utf8').split('|');
     if (!createdAt || !id) return null;
     return { createdAt, id };
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 function encodeCursor(createdAt: Date, id: string) {
@@ -41,7 +43,9 @@ export async function listPosts(params: PostsListParams) {
     if (process.env.USE_FULLTEXT === '1') {
       // Считаем релевантность и сортируем по ней вверху, затем по дате
       qb.addSelect('MATCH(p.title, p.content) AGAINST (:q IN NATURAL LANGUAGE MODE)', 'relevance')
-        .andWhere('MATCH(p.title, p.content) AGAINST (:q IN NATURAL LANGUAGE MODE)', { q: params.q })
+        .andWhere('MATCH(p.title, p.content) AGAINST (:q IN NATURAL LANGUAGE MODE)', {
+          q: params.q,
+        })
         .orderBy('relevance', 'DESC')
         .addOrderBy('p.createdAt', 'DESC')
         .addOrderBy('p.id', 'DESC');
@@ -49,7 +53,7 @@ export async function listPosts(params: PostsListParams) {
       qb.andWhere('p.title LIKE :like', { like: `%${params.q}%` });
     }
   }
-  
+
   if (params.authorId) qb.andWhere('p.authorId = :aid', { aid: params.authorId });
 
   if (params.includeAuthor) {
@@ -62,10 +66,13 @@ export async function listPosts(params: PostsListParams) {
     if (c) {
       qb.andWhere(
         new Brackets((w) => {
-          w.where('p.createdAt < :cAt', { cAt: c.createdAt })
-           .orWhere(new Brackets((w2) => {
-             w2.where('p.createdAt = :cAt', { cAt: c.createdAt }).andWhere('p.id < :cid', { cid: c.id });
-           }));
+          w.where('p.createdAt < :cAt', { cAt: c.createdAt }).orWhere(
+            new Brackets((w2) => {
+              w2.where('p.createdAt = :cAt', { cAt: c.createdAt }).andWhere('p.id < :cid', {
+                cid: c.id,
+              });
+            }),
+          );
         }),
       );
     }
@@ -74,7 +81,9 @@ export async function listPosts(params: PostsListParams) {
   const rows = await qb.getMany();
   const items = rows.slice(0, limit);
   const nextCursor =
-    rows.length > limit ? encodeCursor(items[items.length - 1].createdAt, items[items.length - 1].id) : null;
+    rows.length > limit
+      ? encodeCursor(items[items.length - 1].createdAt, items[items.length - 1].id)
+      : null;
 
   return { items, nextCursor, hasNext: !!nextCursor };
 }
@@ -86,7 +95,13 @@ export async function getPostById(id: string, includeAuthor = false, withDeleted
       where: { id },
       withDeleted,
       select: {
-        id: true, title: true, content: true, authorId: true, createdAt: true, updatedAt: true, deletedAt: true
+        id: true,
+        title: true,
+        content: true,
+        authorId: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
       },
     });
   }
@@ -95,7 +110,13 @@ export async function getPostById(id: string, includeAuthor = false, withDeleted
     relations: { author: true },
     withDeleted,
     select: {
-      id: true, title: true, content: true, authorId: true, createdAt: true, updatedAt: true, deletedAt: true,
+      id: true,
+      title: true,
+      content: true,
+      authorId: true,
+      createdAt: true,
+      updatedAt: true,
+      deletedAt: true,
       author: { id: true, displayName: true },
     },
   });
@@ -118,24 +139,23 @@ export async function updatePost(id: string, patch: Partial<Pick<Post, 'title' |
 
 // Узкий SELECT для ACL: без контента и прочего
 export async function getPostAclMeta(id: string) {
-    return postsRepo()
-      .createQueryBuilder('p')
-      .select(['p.id', 'p.authorId', 'p.deletedAt'])
-      .withDeleted()               // видеть, существует ли уже soft-deleted
-      .where('p.id = :id', { id })
-      .getOne();
-  }
-  
-  // Мягкое удаление без загрузки сущности, с защитой от повторного удаления
-  export async function softDeletePostByIdNoFetch(id: string) {
-    const res = await postsRepo()
-      .createQueryBuilder()
-      .update(Post)
-      .set({ deletedAt: () => 'CURRENT_TIMESTAMP(3)' })
-      .where('id = :id', { id })
-      .andWhere('deletedAt IS NULL')     // если уже удалён — не трогаем (будет 0 affected)
-      .execute();
-  
-    return (res.affected ?? 0) > 0;
-  }
-  
+  return postsRepo()
+    .createQueryBuilder('p')
+    .select(['p.id', 'p.authorId', 'p.deletedAt'])
+    .withDeleted() // видеть, существует ли уже soft-deleted
+    .where('p.id = :id', { id })
+    .getOne();
+}
+
+// Мягкое удаление без загрузки сущности, с защитой от повторного удаления
+export async function softDeletePostByIdNoFetch(id: string) {
+  const res = await postsRepo()
+    .createQueryBuilder()
+    .update(Post)
+    .set({ deletedAt: () => 'CURRENT_TIMESTAMP(3)' })
+    .where('id = :id', { id })
+    .andWhere('deletedAt IS NULL') // если уже удалён — не трогаем (будет 0 affected)
+    .execute();
+
+  return (res.affected ?? 0) > 0;
+}

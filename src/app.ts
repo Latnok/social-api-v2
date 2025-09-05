@@ -32,9 +32,9 @@ export function createApp() {
   );
 
   const origins = (process.env.CORS_ORIGINS ?? '')
-  .split(',')
-  .map((s) => s.trim())
-  .filter(Boolean);
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
 
   app.use(
     cors({

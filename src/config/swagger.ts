@@ -165,12 +165,16 @@ export const openapiSpecification = swaggerJSDoc({
           summary: 'Регистрация',
           requestBody: {
             required: true,
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/AuthRegisterBody' } } },
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/AuthRegisterBody' } },
+            },
           },
           responses: {
             '201': {
               description: 'Ок',
-              content: { 'application/json': { schema: { $ref: '#/components/schemas/AuthResponse' } } },
+              content: {
+                'application/json': { schema: { $ref: '#/components/schemas/AuthResponse' } },
+              },
             },
             '409': {
               description: 'Email занят',
@@ -189,12 +193,16 @@ export const openapiSpecification = swaggerJSDoc({
           summary: 'Логин',
           requestBody: {
             required: true,
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/AuthLoginBody' } } },
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/AuthLoginBody' } },
+            },
           },
           responses: {
             '200': {
               description: 'Ок',
-              content: { 'application/json': { schema: { $ref: '#/components/schemas/AuthResponse' } } },
+              content: {
+                'application/json': { schema: { $ref: '#/components/schemas/AuthResponse' } },
+              },
             },
             '401': {
               description: 'Неверные данные',
@@ -212,7 +220,11 @@ export const openapiSpecification = swaggerJSDoc({
               description: 'Новый access токен',
               content: {
                 'application/json': {
-                  schema: { type: 'object', properties: { accessToken: { type: 'string' } }, required: ['accessToken'] },
+                  schema: {
+                    type: 'object',
+                    properties: { accessToken: { type: 'string' } },
+                    required: ['accessToken'],
+                  },
                 },
               },
             },
@@ -243,13 +255,20 @@ export const openapiSpecification = swaggerJSDoc({
             { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100 } },
             { name: 'page', in: 'query', schema: { type: 'integer', minimum: 1 } },
             { name: 'cursor', in: 'query', schema: { type: 'string' } },
-            { name: 'q', in: 'query', schema: { type: 'string' }, description: 'Поиск по email/displayName' },
+            {
+              name: 'q',
+              in: 'query',
+              schema: { type: 'string' },
+              description: 'Поиск по email/displayName',
+            },
             { name: 'withDeleted', in: 'query', schema: { type: 'boolean' } },
           ],
           responses: {
             '200': {
               description: 'Ок',
-              content: { 'application/json': { schema: { $ref: '#/components/schemas/UsersListResponse' } } },
+              content: {
+                'application/json': { schema: { $ref: '#/components/schemas/UsersListResponse' } },
+              },
             },
             '401': {
               description: 'Unauthorized',
@@ -274,7 +293,9 @@ export const openapiSpecification = swaggerJSDoc({
           responses: {
             '200': {
               description: 'Ок',
-              content: { 'application/json': { schema: { $ref: '#/components/schemas/UserPublic' } } },
+              content: {
+                'application/json': { schema: { $ref: '#/components/schemas/UserPublic' } },
+              },
             },
             '404': {
               description: 'Не найден',
@@ -288,7 +309,12 @@ export const openapiSpecification = swaggerJSDoc({
           security: [{ bearerAuth: [] }],
           parameters: [
             { name: 'id', in: 'path', required: true, schema: { type: 'string' } },
-            { name: 'hard', in: 'query', schema: { type: 'boolean' }, description: 'true = жёсткое удаление' },
+            {
+              name: 'hard',
+              in: 'query',
+              schema: { type: 'boolean' },
+              description: 'true = жёсткое удаление',
+            },
           ],
           responses: {
             '204': { description: 'Удалён' },
@@ -308,14 +334,21 @@ export const openapiSpecification = swaggerJSDoc({
           parameters: [
             { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100 } },
             { name: 'cursor', in: 'query', schema: { type: 'string' } },
-            { name: 'q', in: 'query', schema: { type: 'string' }, description: 'Поиск по заголовку' },
+            {
+              name: 'q',
+              in: 'query',
+              schema: { type: 'string' },
+              description: 'Поиск по заголовку',
+            },
             { name: 'authorId', in: 'query', schema: { type: 'string' } },
             { name: 'include', in: 'query', schema: { type: 'string', enum: ['author'] } },
           ],
           responses: {
             '200': {
               description: 'Ок',
-              content: { 'application/json': { schema: { $ref: '#/components/schemas/PostsListResponse' } } },
+              content: {
+                'application/json': { schema: { $ref: '#/components/schemas/PostsListResponse' } },
+              },
             },
           },
         },
@@ -325,12 +358,16 @@ export const openapiSpecification = swaggerJSDoc({
           security: [{ bearerAuth: [] }],
           requestBody: {
             required: true,
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/PostCreateBody' } } },
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/PostCreateBody' } },
+            },
           },
           responses: {
             '201': {
               description: 'Создан',
-              content: { 'application/json': { schema: { $ref: '#/components/schemas/PostFull' } } },
+              content: {
+                'application/json': { schema: { $ref: '#/components/schemas/PostFull' } },
+              },
             },
             '400': {
               description: 'Валидация',
@@ -355,7 +392,9 @@ export const openapiSpecification = swaggerJSDoc({
           responses: {
             '200': {
               description: 'Ок',
-              content: { 'application/json': { schema: { $ref: '#/components/schemas/PostFull' } } },
+              content: {
+                'application/json': { schema: { $ref: '#/components/schemas/PostFull' } },
+              },
             },
             '404': {
               description: 'Не найден',
@@ -370,12 +409,16 @@ export const openapiSpecification = swaggerJSDoc({
           parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
           requestBody: {
             required: true,
-            content: { 'application/json': { schema: { $ref: '#/components/schemas/PostPatchBody' } } },
+            content: {
+              'application/json': { schema: { $ref: '#/components/schemas/PostPatchBody' } },
+            },
           },
           responses: {
             '200': {
               description: 'Ок',
-              content: { 'application/json': { schema: { $ref: '#/components/schemas/PostFull' } } },
+              content: {
+                'application/json': { schema: { $ref: '#/components/schemas/PostFull' } },
+              },
             },
             '400': {
               description: 'Валидация',

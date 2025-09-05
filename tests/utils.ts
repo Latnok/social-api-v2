@@ -9,9 +9,7 @@ export function testApp() {
 
 export async function makeUser(email: string, password = 'pass12345', displayName = 'User') {
   const app = testApp();
-  const res = await request(app)
-    .post('/api/auth/register')
-    .send({ email, password, displayName });
+  const res = await request(app).post('/api/auth/register').send({ email, password, displayName });
 
   const access = res.body.accessToken as string;
 

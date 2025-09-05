@@ -27,7 +27,7 @@ export const errorHandler = (err: unknown, req: Request, res: Response, _next: N
   res.status(status).json({
     error: message,
     ...(code && { code }),
-    ...(err as any)?.details ? { details: (err as any).details } : {},
+    ...((err as any)?.details ? { details: (err as any).details } : {}),
     ...(process.env.NODE_ENV !== 'production' && { stack: (err as any)?.stack }),
   });
 };

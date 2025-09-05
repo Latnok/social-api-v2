@@ -36,10 +36,7 @@ describe('Auth', () => {
 
     const cookie = reg.headers['set-cookie'];
 
-    const refresh = await request(app)
-      .post('/api/auth/refresh')
-      .set('Cookie', cookie)
-      .expect(200);
+    const refresh = await request(app).post('/api/auth/refresh').set('Cookie', cookie).expect(200);
 
     expect(refresh.body.accessToken).toBeTruthy();
   });

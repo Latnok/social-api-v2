@@ -9,7 +9,7 @@ export function validateBody<T>(Dto: Ctor<T>) {
   return async (req: Request, _res: Response, next: NextFunction) => {
     const inst = plainToInstance(Dto, req.body, { enableImplicitConversion: true });
     const errors = await validate(inst as object, {
-      whitelist: true,            // выбрасываем посторонние поля
+      whitelist: true, // выбрасываем посторонние поля
       forbidNonWhitelisted: true, // ошибка, если пришло лишнее
     });
 

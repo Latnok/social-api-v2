@@ -8,7 +8,7 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/tests/jest.setup.ts'],
   globalSetup: '<rootDir>/tests/jest.global-setup.ts',
   globalTeardown: '<rootDir>/tests/jest.global-teardown.ts',
-  testTimeout: 30000
+  testTimeout: 30000,
 };
 
 export default config;

@@ -21,5 +21,5 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   logging: env.nodeEnv === 'development' ? ['error'] : false,
   extra: { connectionLimit: 20 },
-  maxQueryExecutionTime: 200
+  maxQueryExecutionTime: 200,
 });

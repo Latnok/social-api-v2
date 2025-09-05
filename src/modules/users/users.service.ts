@@ -16,10 +16,10 @@ export const createUser = async (data: Pick<User, 'email' | 'displayName' | 'pas
 
 export type UsersListParams = {
   limit?: number;
-  page?: number;                 // offset-пагинация
-  cursor?: string | null;        // cursor-пагинация base64("createdAt|id")
-  q?: string | null;             // поиск по email/displayName
-  withDeleted?: boolean;         // увидеть удалённых (для аудита)
+  page?: number; // offset-пагинация
+  cursor?: string | null; // cursor-пагинация base64("createdAt|id")
+  q?: string | null; // поиск по email/displayName
+  withDeleted?: boolean; // увидеть удалённых (для аудита)
 };
 
 function decodeCursor(cursor: string): { createdAt: string; id: string } | null {
@@ -27,7 +27,9 @@ function decodeCursor(cursor: string): { createdAt: string; id: string } | null 
     const [createdAt, id] = Buffer.from(cursor, 'base64').toString('utf8').split('|');
     if (!createdAt || !id) return null;
     return { createdAt, id };
-  } catch { return null; }
+  } catch {
+    return null;
+  }
 }
 
 function encodeCursor(createdAt: Date, id: string) {
@@ -48,9 +50,11 @@ export async function listUsers(params: UsersListParams) {
 
   if (params.q) {
     const like = `%${params.q}%`;
-    qb.andWhere(new Brackets((w) => {
-      w.where('u.email LIKE :like', { like }).orWhere('u.displayName LIKE :like', { like });
-    }));
+    qb.andWhere(
+      new Brackets((w) => {
+        w.where('u.email LIKE :like', { like }).orWhere('u.displayName LIKE :like', { like });
+      }),
+    );
   }
 
   if (params.cursor) {
@@ -58,10 +62,13 @@ export async function listUsers(params: UsersListParams) {
     if (c) {
       qb.andWhere(
         new Brackets((w) => {
-          w.where('u.createdAt < :cAt', { cAt: c.createdAt })
-           .orWhere(new Brackets((w2) => {
-             w2.where('u.createdAt = :cAt', { cAt: c.createdAt }).andWhere('u.id < :cid', { cid: c.id });
-           }));
+          w.where('u.createdAt < :cAt', { cAt: c.createdAt }).orWhere(
+            new Brackets((w2) => {
+              w2.where('u.createdAt = :cAt', { cAt: c.createdAt }).andWhere('u.id < :cid', {
+                cid: c.id,
+              });
+            }),
+          );
         }),
       );
     }
@@ -71,7 +78,10 @@ export async function listUsers(params: UsersListParams) {
 
   const rows = await qb.getMany();
   const items = rows.slice(0, limit);
-  const nextCursor = rows.length > limit ? encodeCursor(items[items.length - 1].createdAt, items[items.length - 1].id) : null;
+  const nextCursor =
+    rows.length > limit
+      ? encodeCursor(items[items.length - 1].createdAt, items[items.length - 1].id)
+      : null;
 
   return { items, nextCursor, hasNext: !!nextCursor };
 }
